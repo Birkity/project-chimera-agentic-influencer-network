@@ -5,8 +5,11 @@
 			"type": "http",
 			"headers": {
 				"X-Device": "windows",
-				"X-Coding-Tool": "vscode"
-			}
+				"X-Coding-Tool": "vscode",
+				"Content-Type": "application/json",
+				"User-Agent": "MCP-Client/1.0"
+			},
+			
 		}
 	},
 	"inputs": []
