@@ -1,0 +1,254 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{longtable}
+
+\geometry{margin=1in}
+
+\definecolor{linkblue}{RGB}{0, 102, 204}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=linkblue,
+    urlcolor=linkblue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Project Chimera: Research Report}
+\fancyhead[R]{February 2026}
+\fancyfoot[C]{\thepage}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    
+    {\Huge\bfseries Project Chimera}\\[0.5cm]
+    {\Large Research Summary and Architectural Strategy}\\[1.5cm]
+    
+    {\large Task 1 Deliverable: The Strategist Phase}\\[2cm]
+    
+    \begin{tabular}{rl}
+        \textbf{Author:} & Birkity Yishak \\
+        \textbf{Date:} & February 4, 2026 \\
+        \textbf{Context:} & Spec-Driven Development, Agentic Orchestration
+    \end{tabular}
+    
+    \vfill
+    
+    \textit{This document summarizes my research findings and explains the architectural decisions I'm making for Project Chimera.}
+    
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{What is Project Chimera?}
+
+Before diving into my research, let me explain what we're building. Project Chimera is an \textbf{Autonomous AI Influencer} system. Think of it as a digital entity that can research trending topics, create content (text, images, maybe video), post to social media, and engage with followers on its own.
+
+The challenge document makes something clear: we're not here to ``vibe code'' a quick prototype. We're architecting a \textbf{factory} that produces reliable, scalable AI agents. This means our specifications must be precise, our infrastructure must be solid, and our governance must be clear.
+
+\section{Part A: Research Summary}
+
+\subsection{What I Learned from the a16z Article}
+
+I read the a16z piece called ``The Trillion Dollar AI Software Development Stack'' and it gave me perspective on where the industry is heading.
+
+\textbf{The main insight:} AI development has moved beyond simple prompting. The new workflow is \textbf{Plan, Code, Review}. First, you work with an LLM to create a detailed specification. Then, the AI generates code based on that spec. Finally, a human reviews and adjusts.
+
+\textbf{Why this matters for us:} This validates the ``Spec-Driven Development'' approach our challenge requires. The article says something that stuck with me: specifications serve two purposes. They guide code generation AND they help future developers (human or AI) understand what the code does. If we write vague specs, our agents will hallucinate. If we write precise specs, they'll build what we actually want.
+
+\textbf{Practical takeaway:} We need to invest serious time in our \texttt{specs/} directory. It's not bureaucracy; it's the foundation that makes everything else work.
+
+The article also mentions that companies are building ``knowledge repositories designed purely for AI.'' These are files like \texttt{.cursor/rules} or \texttt{CLAUDE.md} that teach the AI assistant how to behave in a specific codebase. We're required to create one of these as part of Task 2.
+
+\subsection{What I Learned from OpenClaw and MoltBook}
+
+This research was eye-opening and honestly a bit scary. I read the Permiso Security analysis of the OpenClaw ecosystem.
+
+\textbf{What is OpenClaw?} It's essentially a framework for building AI agents that can do things on your behalf. The key architecture has three parts:
+
+\begin{enumerate}
+    \item \textbf{SOUL.md} defines the agent's personality and beliefs
+    \item \textbf{Memories} stores context that persists across sessions
+    \item \textbf{Heartbeat} schedules autonomous actions
+\end{enumerate}
+
+\textbf{Why this matters for us:} Our SRS document requires something similar. We need to define personas for our influencer agents, and we need persistent memory so they remember past interactions. The SOUL.md concept maps directly to what the SRS calls ``Persona Instantiation.''
+
+\textbf{MoltBook} is where things get interesting and concerning. It's a social network where AI agents are the users, not humans. Agents post updates, follow each other, and share information. The challenge document asks us to consider how Project Chimera might integrate with this ``Agent Social Network.''
+
+\textbf{The security warning:} The Permiso researchers found real malware campaigns on these platforms. One skill disguised as a weather app was actually stealing credentials. Over 377 people downloaded malicious skills before anyone caught it. The problem is that these agents often have access to email, Slack, calendars. When one skill is compromised, everything is compromised.
+
+\textbf{Practical takeaway:} If we ever integrate with OpenClaw or similar networks, we need to be extremely careful. I'm recommending we start with read-only participation and minimal credentials. We also need to verify any skills before we trust them.
+
+\subsection{What I Learned from the SRS Document}
+
+The SRS (Software Requirements Specification) is our primary source of truth. Here's what stood out:
+
+\textbf{The FastRender Pattern:} This is the agent architecture the SRS recommends. It has three roles:
+
+\begin{itemize}
+    \item \textbf{Planner} figures out what needs to be done and breaks it into tasks
+    \item \textbf{Worker} executes individual tasks (write a caption, generate an image, post to Twitter)
+    \item \textbf{Judge} reviews the Worker's output before it goes live
+\end{itemize}
+
+\textbf{Why I like this pattern:} It separates concerns clearly. The Planner thinks strategically. Workers focus on execution. Judges ensure quality. If a Worker produces bad output, we don't restart everything; we just retry that one task.
+
+\textbf{MCP (Model Context Protocol):} This is how our agents connect to external services. Instead of writing custom code for every API, we use MCP servers as bridges. For example, \texttt{mcp-server-twitter} handles all Twitter API calls. If Twitter changes their API, we update the MCP server, not our agent code.
+
+\textbf{The Business Models:} The SRS describes three ways to make money:
+\begin{enumerate}
+    \item Run our own AI influencers and monetize their audiences
+    \item License the platform to brands who want their own AI ambassadors
+    \item Combine both approaches
+\end{enumerate}
+
+This context helps me understand the scale we're designing for. We're not building one agent; we're building a system that could run thousands.
+
+\section{Part B: My Architectural Decisions}
+
+Now let me explain the choices I'm making and why.
+
+\subsection{Decision 1: Agent Pattern}
+
+\textbf{My choice: Hierarchical Swarm (Planner-Worker-Judge)}
+
+\textbf{Why not a simple sequential chain?} In a sequential chain, you'd have one agent do everything: research trends, write content, generate images, post. The problem is that if any step fails, you restart from scratch. Also, you can't parallelize anything.
+
+\textbf{Why the swarm approach works better:} Let's say we need to create 10 social media posts. With a sequential approach, we'd do them one by one. With the Planner-Worker-Judge pattern, the Planner can spawn 10 Workers in parallel. Each Worker handles one post. Each output goes to a Judge for review. We get 10x throughput without sacrificing quality control.
+
+The other benefit is error isolation. If Worker \#3 generates inappropriate content, the Judge catches it and asks for a retry. Workers \#1, 2, 4-10 are unaffected. We don't lose their work.
+
+\textbf{Trade-off I'm accepting:} This pattern is more complex to implement. We need message queues (probably Redis), we need to track task states, and we need to handle concurrent operations. But for an autonomous influencer system that might manage hundreds of posts per day, this complexity is worth it.
+
+\subsection{Decision 2: Human-in-the-Loop}
+
+\textbf{My choice: Confidence-based escalation}
+
+The SRS suggests a three-tier system based on confidence scores:
+
+\begin{itemize}
+    \item \textbf{High confidence (above 90\%):} Auto-approve. The content posts immediately.
+    \item \textbf{Medium confidence (70-90\%):} Queue for human review. The agent continues with other tasks while waiting.
+    \item \textbf{Low confidence (below 70\%):} Automatic rejection. The Planner retries with different instructions.
+\end{itemize}
+
+\textbf{Why I like this approach:} It balances automation with safety. Routine posts (like responding to a simple comment) can happen automatically. Novel or sensitive content gets human eyes.
+
+\textbf{What I'd add:} Regardless of confidence score, certain topics must always go to humans. Politics, health claims, financial advice, legal statements. These are too risky to automate no matter how confident the AI is.
+
+\subsection{Decision 3: Database Strategy}
+
+\textbf{My choice: Hybrid approach (PostgreSQL + Weaviate + Redis)}
+
+The challenge asks us to consider SQL vs NoSQL for high-velocity video metadata. My answer is: use both, for different purposes.
+
+\textbf{PostgreSQL (SQL) for structured data:} User accounts, campaign configurations, financial records, operational logs. Why SQL? Because this data needs transactional integrity. If we debit an advertiser's budget and credit the influencer's earnings, both operations must succeed or both must fail.
+
+\textbf{Weaviate (Vector database) for semantic memory:} The agent's long-term memories, persona definitions, content embeddings for similarity search. Why a vector database? Because when the agent needs to remember something relevant, it's not a simple lookup. It's ``find memories similar to this current context.'' Vector databases are built for this kind of semantic search.
+
+\textbf{Redis for short-term operations:} Task queues, rate limiting counters, session caches, recent conversation history. Why Redis? It's fast. We're talking microseconds for operations that might happen thousands of times per hour.
+
+\textbf{Trade-off I'm accepting:} Managing three database systems is more complex than using one. But each is purpose-built for its job.
+
+\subsection{Decision 4: MCP as the Integration Layer}
+
+\textbf{My choice: Use MCP for all external connections}
+
+This isn't really a choice; the challenge and SRS both require it. But let me explain why it makes sense.
+
+\textbf{The problem MCP solves:} Without MCP, every time we want to connect to a new service, we write custom integration code inside our agent. This creates two problems: the agent code gets cluttered with API-specific details, and when APIs change, we have to update the agent itself.
+
+\textbf{How MCP fixes this:} MCP creates a standard interface. The agent just says ``call this tool with these parameters.'' The MCP server handles the actual API call. If Twitter changes their API, we update \texttt{mcp-server-twitter}. The agent code stays the same.
+
+\subsection{Decision 5: Docker for Containerization}
+
+\textbf{My choice: Yes, we need Docker}
+
+The challenge is explicit: ``It works on my machine'' is not acceptable. Docker solves this by packaging everything (code, dependencies, configuration) into a container that runs the same everywhere.
+
+What I envision: a \texttt{Dockerfile} that sets up our Python environment, a \texttt{docker-compose.yml} that orchestrates multiple services, and a \texttt{Makefile} with commands like \texttt{make test}.
+
+\textbf{Why this matters for agent development:} When AI agents generate code and push it to our repo, the CI/CD pipeline will run tests in Docker. If the tests pass in Docker, they'll pass in production.
+
+\subsection{Decision 6: Skills vs Tools Distinction}
+
+The challenge requires us to distinguish between ``Skills'' and ``MCP Servers.'' Here's how I understand it:
+
+\textbf{Skills} are capabilities our agent has. They're Python functions or modules that do specific things: \texttt{skill\_download\_video}, \texttt{skill\_transcribe\_audio}, \texttt{skill\_generate\_caption}. Skills live in our codebase, in a \texttt{skills/} directory.
+
+\textbf{MCP Servers} are bridges to external services. They're separate processes that our agent communicates with via the MCP protocol: \texttt{mcp-server-twitter}, \texttt{mcp-server-weaviate}.
+
+\textbf{The practical difference:} If we want to add a new capability that involves only local computation, we add a Skill. If we need to talk to an external service, we use or create an MCP server.
+
+\section{Part C: What I Still Need to Figure Out}
+
+Being honest about gaps in my understanding:
+
+\begin{enumerate}
+    \item \textbf{OpenClaw integration specifics:} The SRS mentions agents might publish their ``Availability'' to agent networks. I understand the concept but I'm not sure about the protocol details. For now, I'm treating this as optional.
+    
+    \item \textbf{Agentic Commerce:} The SRS describes agents with crypto wallets that can make transactions. This is interesting but also risky. I'd want strict budget controls and human approval for significant amounts.
+    
+    \item \textbf{Scale testing:} My architecture should handle thousands of agents, but I haven't tested at that scale. We'll validate assumptions once we have working code.
+\end{enumerate}
+
+\section{Conclusion}
+
+My research led me to these core principles:
+
+\begin{enumerate}
+    \item \textbf{Specifications first.} Vague specs cause AI to hallucinate. We write precise specs before we write code.
+    
+    \item \textbf{Hierarchical coordination.} The Planner-Worker-Judge pattern gives us parallelism, error isolation, and quality control.
+    
+    \item \textbf{Defense in depth for security.} The OpenClaw research showed real threats. We need credential isolation and careful integration with external agent networks.
+    
+    \item \textbf{Right tool for each job.} PostgreSQL for transactions, Weaviate for semantic search, Redis for speed, MCP for clean integrations.
+    
+    \item \textbf{Containerize everything.} Docker ensures consistency across development, testing, and production.
+\end{enumerate}
+
+These aren't exotic or futuristic choices. They're proven patterns applied to a new problem domain. The goal is a codebase that's robust enough for AI agents to extend without breaking.
+
+\section*{Next Steps (Task 2)}
+
+\begin{itemize}
+    \item Create the \texttt{specs/} directory with detailed specifications
+    \item Set up \texttt{.cursor/rules} to teach our AI assistant how to work in this codebase
+    \item Define the first three Skills with their input/output contracts
+    \item Document MCP servers we'll use for development
+\end{itemize}
+
+\vspace{1cm}
+\noindent\textit{This report was prepared as part of Task 1 of the Project Chimera challenge. The Tenx MCP Sense server was connected throughout the research and writing process.}
+
+\section*{References}
+
+\begin{enumerate}
+    \item Appenzeller, G. \& Li, Y. (2025). ``The Trillion Dollar AI Software Development Stack.'' a16z. \url{https://a16z.com/the-trillion-dollar-ai-software-development-stack/}
+    
+    \item Ahl, I. (2026). ``Inside the OpenClaw Ecosystem.'' Permiso Security. \url{https://permiso.io/blog/inside-the-openclaw-ecosystem-ai-agents-with-privileged-credentials}
+    
+    \item Model Context Protocol. (2026). ``Architecture Overview.'' \url{https://modelcontextprotocol.io/docs/learn/architecture}
+    
+    \item AiQEM (2026). ``Software Requirements Specification for Project Chimera.''
+\end{enumerate}
+
+\end{document}
