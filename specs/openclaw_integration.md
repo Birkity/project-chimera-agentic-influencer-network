@@ -97,6 +97,7 @@ Chimera agent personas must be translated to OpenClaw-compatible SOUL.md format 
 ```
 
 ### Economic Agency
+
 ```json
 {
   "wallet_capabilities": {
@@ -111,6 +112,7 @@ Chimera agent personas must be translated to OpenClaw-compatible SOUL.md format 
 ```
 
 ### Availability & Constraints
+
 ```json
 {
   "operational_hours": "24/7 with 99.9% uptime SLA",
@@ -124,12 +126,14 @@ Chimera agent personas must be translated to OpenClaw-compatible SOUL.md format 
 ## Trust & Reputation Framework
 
 ### Security Credentials
+
 - **Human-in-the-Loop Override**: Available for sensitive decisions (>$20 transactions, controversial topics)
-- **Audit Trail**: Complete blockchain-verified history of all actions 
+- **Audit Trail**: Complete blockchain-verified history of all actions
 - **Brand Safety**: Automated content filtering with 99.5% accuracy
 - **Platform Compliance**: Zero policy violations across all supported platforms
 
 ### Performance Metrics (Updated Weekly)
+
 ```json
 {
   "content_quality_score": 0.89,
@@ -144,6 +148,7 @@ Chimera agent personas must be translated to OpenClaw-compatible SOUL.md format 
 ---
 
 *This agent operates under the Chimera Autonomous Influencer Network with enterprise-grade security and human oversight capabilities.*
+
 ```
 
 ## Heartbeat & Availability Protocol
@@ -514,24 +519,28 @@ SECURITY_PROTOCOLS = {
 ## Implementation Roadmap
 
 ### Phase 1: SOUL.md Publishing (Week 1)
+
 - [ ] Generate OpenClaw-compatible SOUL.md for each Chimera persona
 - [ ] Implement heartbeat broadcasting every 30 seconds  
 - [ ] Create agent directory registration process
 - [ ] Deploy basic security credential validation
 
 ### Phase 2: Network Discovery (Week 2)  
+
 - [ ] Implement agent search and discovery protocols
 - [ ] Build compatibility scoring algorithms
 - [ ] Create trust verification system
 - [ ] Test cross-network capability matching
 
 ### Phase 3: Task Collaboration (Week 3)
+
 - [ ] Deploy smart contract escrow system
 - [ ] Implement collaborative task assignment
 - [ ] Build performance tracking and payment automation
 - [ ] Create dispute resolution mechanisms
 
 ### Phase 4: Advanced Security (Week 4)
+
 - [ ] Deploy malicious agent detection systems
 - [ ] Implement behavioral anomaly monitoring  
 - [ ] Create emergency isolation protocols
@@ -540,6 +549,7 @@ SECURITY_PROTOCOLS = {
 ## Success Metrics & Monitoring
 
 ### Network Integration KPIs
+
 - **Agent Discovery Rate**: >90% of relevant agents found within 30 seconds
 - **Collaboration Success Rate**: >85% of accepted tasks completed successfully  
 - **Payment Settlement Time**: <5 minutes for escrow contract resolution
@@ -547,6 +557,7 @@ SECURITY_PROTOCOLS = {
 - **Security Incident Rate**: <0.1% of collaborations result in security issues
 
 ### Performance Monitoring Dashboard
+
 ```python
 OPENCLAW_METRICS = {
     "network_health": {
@@ -573,6 +584,7 @@ OPENCLAW_METRICS = {
 ---
 
 **Integration Dependencies**:
+
 1. OpenClaw SDK for network protocol implementation
 2. Smart Contract deployment on compatible blockchain
 3. Cryptographic signature system for message authenticity  

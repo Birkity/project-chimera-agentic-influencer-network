@@ -1,0 +1,241 @@
+# Project Chimera - CodeRabbit AI Review Configuration
+# Automated AI code review policy for specification alignment and security
+
+# CodeRabbit configuration version
+version: 2
+
+# Review scope and triggers
+reviews:
+  # Enable AI review for all pull requests
+  auto_review:
+    enabled: true
+    
+  # Trigger reviews on specific events
+  triggers:
+    - pull_request
+    - push_to_main
+    - draft_ready_for_review
+    
+  # File patterns to include in reviews
+  include_patterns:
+    - "**/*.py"           # Python source files
+    - "**/pyproject.toml" # Package configuration
+    - "**/Dockerfile"     # Container definitions
+    - "**/Makefile"       # Build automation
+    - "specs/*.md"        # Specification documents
+    - "skills/*.py"       # Skills implementations
+    - "tests/*.py"        # Test files
+    - "*.md"              # Documentation
+    - "*.yml"             # YAML configurations
+    - "*.yaml"            # YAML configurations
+    
+  # File patterns to exclude from reviews  
+  exclude_patterns:
+    - "**/__pycache__/**"
+    - "**/node_modules/**"
+    - "**/venv/**"
+    - "**/.venv/**"
+    - "**/dist/**"
+    - "**/build/**"
+    - "**/*.log"
+    - "**/.DS_Store"
+
+# AI Review Instructions and Focus Areas
+instructions: |
+  You are an AI code reviewer for Project Chimera, an autonomous AI influencer network using the FastRender Swarm Pattern with MCP integration.
+  
+  ## PRIMARY REVIEW OBJECTIVES:
+  
+  ### 1. SPECIFICATION ALIGNMENT (CRITICAL)
+  - Ensure code implements contracts defined in specs/technical.md
+  - Validate JSON schema compliance for all data models
+  - Check that API endpoints match OpenAPI 3.0 specifications
+  - Verify skills implement interfaces from skills/README.md
+  - Confirm MCP integration follows research/tooling_strategy.md
+  
+  ### 2. ARCHITECTURE PATTERN COMPLIANCE
+  - FastRender Swarm Pattern: Orchestrator → Planner → Workers → Judge
+  - Confidence-based HITL routing (>90% auto, 70-90% review, <70% reject)
+  - "Autonomy with Bounded Risk" principle ($50/day, $20/transaction limits)
+  - Async/await patterns for agent coordination
+  - Proper error handling with SkillError types
+  
+  ### 3. SECURITY & SAFETY (HIGH PRIORITY)
+  - Input validation and sanitization
+  - Economic transaction limits enforcement
+  - Content safety filtering implementation  
+  - Rate limiting and abuse prevention
+  - Secrets management (no hardcoded credentials)
+  - SQL injection and XSS prevention
+  
+  ### 4. CODE QUALITY & MAINTAINABILITY
+  - Type hints and proper async patterns
+  - Error handling and logging
+  - Performance considerations for 1000+ agents
+  - Test coverage for critical paths
+  - Documentation alignment with implementation
+  
+  ### 5. MCP INTEGRATION COMPLIANCE
+  - Proper MCP server usage patterns
+  - Resource cleanup and connection management  
+  - Error handling for external service failures
+  - Timeout and retry logic implementation
+  
+  ## SPECIFIC FOCUS AREAS:
+  
+  **Agent Implementation:**
+  - Worker Agents must inherit from proper base classes
+  - Confidence scoring must be implemented correctly
+  - Task routing logic must match functional specifications
+  - Economic constraints must be enforced
+  
+  **Skills Implementation:**
+  - Must inherit from SkillBase abstract class
+  - Input/output schemas must match skills/README.md
+  - Performance limits must be respected per category
+  - Error handling must use SkillError types
+  
+  **Database Operations:**
+  - PostgreSQL for transactional data
+  - Weaviate for semantic search/embeddings  
+  - Redis for caching and queuing
+  - Proper connection pooling and cleanup
+  
+  **API Endpoints:**
+  - Must match OpenAPI 3.0 specs in technical.md
+  - Proper authentication and authorization
+  - Rate limiting implementation
+  - Error response formatting
+  
+  ## RED FLAGS TO CATCH:
+  - ❌ Hardcoded API keys or credentials
+  - ❌ Missing input validation on external data
+  - ❌ Unbounded economic operations
+  - ❌ SQL queries without parameterization
+  - ❌ Missing confidence score calculations
+  - ❌ Synchronous calls that should be async
+  - ❌ Missing error handling for external APIs
+  - ❌ Performance bottlenecks in hot paths
+  - ❌ Schema mismatches with specifications
+  - ❌ Missing rate limiting on public endpoints
+
+# Review behavior configuration
+behavior:
+  # Review thoroughness level
+  thoroughness: high
+  
+  # Require explanation for suggestions
+  explain_suggestions: true
+  
+  # Auto-approve simple formatting changes
+  auto_approve_minor: false  # Keep human oversight for Chimera
+  
+  # Review tone and style
+  tone: constructive
+  
+  # Focus on architectural and security issues
+  priority_checks:
+    - security_vulnerabilities
+    - specification_compliance  
+    - architecture_patterns
+    - performance_issues
+    - error_handling
+    
+# Language and framework specific rules
+language_config:
+  python:
+    # Python-specific review focus
+    style_guide: pep8
+    type_checking: enabled
+    async_patterns: required
+    
+    # Specific Python checks for Chimera
+    custom_rules:
+      - name: "MCP Client Usage"
+        pattern: "mcp\\."
+        check: "Ensure MCP clients have proper error handling and cleanup"
+        
+      - name: "Skills Interface"  
+        pattern: "class.*Skill.*:"
+        check: "Verify skills inherit from SkillBase and implement required methods"
+        
+      - name: "Agent Classes"
+        pattern: "class.*Agent.*:"
+        check: "Ensure agents follow FastRender Swarm Pattern architecture"
+        
+      - name: "Database Operations"
+        pattern: "(SELECT|INSERT|UPDATE|DELETE)"
+        check: "Validate parameterized queries and proper connection handling"
+        
+      - name: "Economic Operations"
+        pattern: "(transaction|payment|cost|spend)"
+        check: "Ensure economic limits and validation are enforced"
+
+# Integration with CI/CD
+ci_integration:
+  # Require CodeRabbit approval before merge
+  require_approval: true
+  
+  # Block merge on critical security issues
+  block_on_security: true
+  
+  # Integration with GitHub Actions
+  github_actions:
+    - check_status: "CodeRabbit Review"
+      required: true
+      
+# Notification preferences  
+notifications:
+  # Notify on critical issues
+  on_critical_issues: true
+  
+  # Notify on specification mismatches
+  on_spec_violations: true
+  
+  # Summary reports
+  daily_summary: true
+
+# Custom review templates for different change types
+review_templates:
+  skill_implementation:
+    focus_areas:
+      - "Skills interface compliance with skills/README.md"
+      - "Input/output schema validation" 
+      - "Performance limits adherence"
+      - "Error handling with SkillError types"
+      - "Confidence scoring implementation"
+      
+  agent_implementation:
+    focus_areas:
+      - "FastRender Swarm Pattern compliance"
+      - "Async coordination patterns"
+      - "HITL routing implementation" 
+      - "Economic constraint enforcement"
+      - "MCP integration correctness"
+      
+  api_implementation:
+    focus_areas:
+      - "OpenAPI 3.0 specification compliance"
+      - "Authentication and authorization"
+      - "Rate limiting implementation"
+      - "Input validation and security"
+      - "Error response formatting"
+      
+  database_changes:
+    focus_areas:
+      - "Schema alignment with specs/technical.md"
+      - "Migration safety and rollback"
+      - "Performance impact assessment" 
+      - "Data integrity constraints"
+      - "Connection pooling and cleanup"
+
+# Learning and improvement
+learning:
+  # Learn from previous reviews
+  adaptive_learning: true
+  
+  # Update patterns based on project evolution
+  pattern_recognition: true
+  
+  # Improve specification alignment over time
+  spec_alignment_learning: true

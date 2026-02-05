@@ -1,0 +1,181 @@
+# Project Chimera - Development Docker Compose
+# Supporting services for containerized development environment
+
+version: '3.8'
+
+networks:
+  chimera-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  weaviate_data:
+
+services:
+  # PostgreSQL Database - Primary transactional data store
+  postgres:
+    image: postgres:15-alpine
+    container_name: chimera-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chimera
+      POSTGRES_USER: chimera
+      POSTGRES_PASSWORD: chimera_dev_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - chimera-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chimera -d chimera"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Redis Cache & Message Queue
+  redis:
+    image: redis:7-alpine
+    container_name: chimera-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - chimera-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+  # Weaviate Vector Database - Semantic search and embeddings
+  weaviate:
+    image: semitechnologies/weaviate:1.22.4
+    container_name: chimera-weaviate
+    restart: unless-stopped
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-openai'
+      ENABLE_MODULES: 'text2vec-openai,text2vec-cohere,text2vec-huggingface,ref2vec-centroid,generative-openai,qna-openai'
+      CLUSTER_HOSTNAME: 'weaviate-node1'
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    networks:
+      - chimera-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/.well-known/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # MCP Server for Git Operations (Development)
+  mcp-git:
+    image: mcp/git-server:latest
+    container_name: chimera-mcp-git
+    restart: unless-stopped
+    environment:
+      MCP_SERVER_NAME: git-mcp
+      GIT_WORKSPACE: /workspace
+    volumes:
+      - ../:/workspace:ro
+    ports:
+      - "3001:3000"
+    networks:
+      - chimera-network
+    depends_on:
+      - postgres
+      - redis
+
+  # MCP Server for Filesystem Operations (Development)  
+  mcp-filesystem:
+    image: mcp/filesystem-server:latest
+    container_name: chimera-mcp-filesystem
+    restart: unless-stopped
+    environment:
+      MCP_SERVER_NAME: filesystem-mcp
+      ALLOWED_DIRECTORIES: /app,/tmp
+    volumes:
+      - ../:/app
+    ports:
+      - "3002:3000"
+    networks:
+      - chimera-network
+
+  # Development Database Admin Interface
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: chimera-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@chimera.local
+      PGADMIN_DEFAULT_PASSWORD: chimera_admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - ./pgadmin_config:/var/lib/pgadmin
+    ports:
+      - "8081:80"
+    networks:
+      - chimera-network
+    depends_on:
+      - postgres
+    profiles:
+      - admin
+
+  # Redis Admin Interface
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: chimera-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8082:8081"
+    networks:
+      - chimera-network
+    depends_on:
+      - redis
+    profiles:
+      - admin
+
+  # Log aggregation for development
+  logs:
+    image: grafana/loki:2.9.0
+    container_name: chimera-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - chimera-network
+    profiles:
+      - monitoring
+
+  # Metrics visualization  
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: chimera-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: chimera_grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - chimera-network
+    depends_on:
+      - logs
+    profiles:
+      - monitoring

@@ -10,20 +10,24 @@
 The Chimera Skills Architecture provides modular, reusable capabilities that Worker Agents can execute to accomplish atomic tasks. Skills are local computational modules that implement specific functionality aligned with the user stories defined in [specs/functional.md](../specs/functional.md).
 
 **Skills vs. MCP Servers**:
+
 - **Skills**: Local computational logic (video processing, trend analysis, content generation)
 - **MCP Servers**: External API bridges (Twitter integration, Coinbase transactions, Weaviate queries)
 
 ## Skill Categories
 
-### 1. Content Creation Pipeline 
+### 1. Content Creation Pipeline
+
 **Purpose**: Generate and process multimedia content for social platforms
 **User Stories**: Epic 3 from [specs/functional.md](../specs/functional.md)
 
 #### skill_download_video
+
 **Location**: `skills/content_creation/download_video.py`
 **Function**: Acquire video content from URLs, platforms, or user uploads
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -63,6 +67,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -104,10 +109,12 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 #### skill_transcribe_audio
+
 **Location**: `skills/content_creation/transcribe_audio.py`
 **Function**: Convert speech to text with speaker identification and sentiment
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -145,6 +152,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -194,10 +202,12 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 #### skill_generate_caption
+
 **Location**: `skills/content_creation/generate_caption.py`  
 **Function**: Create platform-optimized social media captions with hashtags and mentions
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -247,6 +257,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -291,14 +302,17 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 ### 2. Market Intelligence
+
 **Purpose**: Analyze market conditions, trends, and social sentiment  
 **User Stories**: Epic 4 from [specs/functional.md](../specs/functional.md)
 
 #### skill_analyze_trends
+
 **Location**: `skills/market_intelligence/analyze_trends.py`
 **Function**: Identify emerging topics with viral potential and engagement patterns
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -335,6 +349,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -382,10 +397,12 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 #### skill_fetch_news
+
 **Location**: `skills/market_intelligence/fetch_news.py`
 **Function**: Gather and analyze news articles relevant to content strategy
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -424,6 +441,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object", 
@@ -470,10 +488,12 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 #### skill_sentiment_analysis
+
 **Location**: `skills/market_intelligence/sentiment_analysis.py`
 **Function**: Analyze emotional sentiment and public opinion across social platforms
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -513,6 +533,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -570,14 +591,17 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 ### 3. Social Engagement
+
 **Purpose**: Manage authentic interactions and optimize social presence
 **User Stories**: Epic 5 from [specs/functional.md](../specs/functional.md)
 
 #### skill_reply_comments  
+
 **Location**: `skills/social_engagement/reply_comments.py`
 **Function**: Generate contextually appropriate responses to mentions and comments
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -626,6 +650,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -667,10 +692,12 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 #### skill_schedule_posts
+
 **Location**: `skills/social_engagement/schedule_posts.py`
 **Function**: Optimize posting frequency and timing for maximum engagement
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -721,6 +748,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -774,10 +802,12 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 #### skill_analyze_metrics
+
 **Location**: `skills/social_engagement/analyze_metrics.py`
 **Function**: Measure performance and provide actionable insights for content optimization
 
 **Input Schema**:
+
 ```json
 {
   "type": "object",
@@ -824,6 +854,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ```
 
 **Output Schema**:
+
 ```json
 {
   "type": "object",
@@ -884,6 +915,7 @@ The Chimera Skills Architecture provides modular, reusable capabilities that Wor
 ## Skill Interface Standards
 
 ### Base Skill Structure
+
 All skills must implement this Python interface:
 
 ```python
@@ -995,6 +1027,7 @@ except APITimeout:
 ## Performance Requirements
 
 ### Skills Performance Targets
+
 From [specs/_meta.md](../specs/_meta.md) and [specs/functional.md](../specs/functional.md):
 
 | Skill Category | Max Execution Time | Memory Limit | Cost Limit |
@@ -1004,6 +1037,7 @@ From [specs/_meta.md](../specs/_meta.md) and [specs/functional.md](../specs/func
 | Social Engagement | 5 seconds | 512MB | $2 USD |
 
 ### Quality Metrics
+
 - **Confidence Score**: All skills must return confidence ≥ 0.70 for auto-approval
 - **Success Rate**: >95% successful execution under normal conditions
 - **Data Quality**: Input validation catches >99% of malformed requests
@@ -1012,6 +1046,7 @@ From [specs/_meta.md](../specs/_meta.md) and [specs/functional.md](../specs/func
 ## Integration with Agent Types
 
 ### Worker Agent Integration
+
 ```python
 # Example: Content Creation Worker using skills
 from chimera.skills.content_creation import skill_download_video, skill_transcribe_audio, skill_generate_caption
@@ -1058,6 +1093,7 @@ class ContentCreationWorker:
 ## Development & Testing Guidelines
 
 ### Skill Development Workflow
+
 1. **Define Specification**: Reference user story from [specs/functional.md](../specs/functional.md)
 2. **Create Schemas**: Input/output JSON schemas with validation
 3. **Write Failing Tests**: TDD approach proving specification requirements
@@ -1066,6 +1102,7 @@ class ContentCreationWorker:
 6. **Integration Testing**: Test with Worker Agents and MCP servers
 
 ### Test-Driven Development for Skills
+
 ```python
 # tests/skills/test_skill_analyze_trends.py
 import pytest
@@ -1101,6 +1138,7 @@ class TestSkillAnalyzeTrends:
 ---
 
 **Next Steps**:
+
 1. Implement Python skill modules following the interface standards
 2. Create tooling strategy documentation for MCP servers  
 3. Build test suite for all skill contracts

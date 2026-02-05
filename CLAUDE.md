@@ -7,6 +7,7 @@
 **NEVER generate code without checking specs/ directory first**
 
 Every implementation must:
+
 1. **Reference the specifications**: Always check [specs/_meta.md](specs/_meta.md), [specs/functional.md](specs/functional.md), [specs/technical.md](specs/technical.md), and [specs/openclaw_integration.md](specs/openclaw_integration.md)
 2. **Follow JSON schemas**: All data structures must conform to schemas defined in [specs/technical.md](specs/technical.md)
 3. **Maintain traceability**: Explain which specification section guides your implementation
@@ -15,6 +16,7 @@ Every implementation must:
 ## Project Architecture Understanding
 
 ### Core System: FastRender Swarm Pattern
+
 ```
 Orchestrator → Planner Agent → Worker Pool → Judge Agent
      ↓              ↓             ↓           ↓
@@ -22,12 +24,14 @@ Orchestrator → Planner Agent → Worker Pool → Judge Agent
 ```
 
 ### Key Principles
+
 - **"Autonomy with Bounded Risk"**: Agents operate independently within strict safety envelopes
 - **Confidence-Based HITL**: Route decisions based on confidence (>90% auto, 70-90% review, <70% reject)  
 - **Economic Agency**: Agents have crypto wallets with spending limits ($50/day, $20/transaction)
 - **Specification-Driven**: All features must be defined in specs/ before implementation
 
 ### Technology Stack
+
 - **Core Language**: Python 3.11+ with `uv` dependency management
 - **Communication**: Model Context Protocol (MCP) for all external integrations
 - **Databases**: PostgreSQL (transactional), Weaviate (semantic), Redis (queuing)
@@ -36,13 +40,16 @@ Orchestrator → Planner Agent → Worker Pool → Judge Agent
 ## Implementation Guidelines
 
 ### 1. JSON Schema Compliance
+
 All data models must use these exact schemas from [specs/technical.md](specs/technical.md):
+
 - **ChimeraTask**: Task management with confidence scoring
 - **AgentPersona**: SOUL.md compatible personality definitions  
 - **GeneratedContent**: Platform-optimized content with metadata
 - **EconomicTransaction**: Bounded-risk financial operations
 
 **Example Implementation Pattern**:
+
 ```python
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal
@@ -56,23 +63,28 @@ class ChimeraTask(BaseModel):
 ```
 
 ### 2. MCP Integration Requirements
+
 All external services MUST use MCP protocol:
 
 **Resources** (Data Sources):
+
 - `twitter://mentions/{handle}/recent` - Social media data
 - `trends://global/hourly` - Trend analysis
 - `news://technology/latest` - News feeds
 
 **Tools** (Actions):
+
 - `generate_social_content` - Content creation
 - `execute_blockchain_transaction` - Economic actions
 - `analyze_market_trends` - Intelligence gathering
 
 **Prompts** (Reusable Reasoning):
+
 - `content_generation_prompt` - Persona-consistent content
 - `confidence_assessment_prompt` - Quality evaluation
 
 ### 3. Skills Architecture Pattern
+
 All skills follow this interface:
 
 ```python
@@ -98,6 +110,7 @@ async def execute_skill(input_data: SkillInput) -> SkillOutput:
 ```
 
 ### 4. Database Operations
+
 Follow the exact ERD from [specs/technical.md](specs/technical.md):
 
 **PostgreSQL Tables**: personas, tasks, content, transactions, agents
@@ -105,6 +118,7 @@ Follow the exact ERD from [specs/technical.md](specs/technical.md):
 **Redis Schemas**: Task queues, rate limiting, daily spend tracking
 
 **SQL Pattern**:
+
 ```python
 # Always use SQLAlchemy with proper error handling
 async def create_task(task_data: ChimeraTask) -> str:
@@ -121,6 +135,7 @@ async def create_task(task_data: ChimeraTask) -> str:
 ```
 
 ### 5. API Contract Implementation
+
 Implement exact endpoints from [specs/technical.md](specs/technical.md):
 
 ```python
@@ -139,6 +154,7 @@ async def create_task(task: ChimeraTask) -> TaskResponse:
 ## Code Quality Standards
 
 ### 1. Error Handling & Resilience
+
 ```python
 # Always implement comprehensive error handling
 try:
@@ -155,13 +171,16 @@ except Exception as e:
 ```
 
 ### 2. Performance Requirements
+
 From [specs/_meta.md](specs/_meta.md):
+
 - **Latency**: <10 seconds end-to-end content creation
 - **Throughput**: 10,000+ tasks/hour per orchestrator
 - **Scalability**: 1000+ concurrent agents
 - **Memory**: <500MB per agent
 
 ### 3. Security Implementation
+
 ```python
 # Economic transaction security
 async def validate_transaction(tx: EconomicTransaction) -> bool:
@@ -181,6 +200,7 @@ async def validate_transaction(tx: EconomicTransaction) -> bool:
 ## Testing Requirements
 
 ### 1. Test-Driven Development
+
 All tests should **FAIL initially** - this proves the specification defines the empty slot correctly:
 
 ```python
@@ -197,6 +217,7 @@ def test_trend_data_schema_compliance():
 ```
 
 ### 2. Integration Testing
+
 ```python
 def test_mcp_integration():
     """Validate MCP tool calls work as specified"""
@@ -213,7 +234,9 @@ def test_mcp_integration():
 ## OpenClaw Integration Context
 
 ### SOUL.md Generation
+
 When creating personas, always generate OpenClaw-compatible SOUL.md:
+
 ```python
 def generate_soul_md(persona: AgentPersona) -> str:
     """
@@ -224,6 +247,7 @@ def generate_soul_md(persona: AgentPersona) -> str:
 ```
 
 ### Heartbeat Protocol
+
 ```python
 async def broadcast_heartbeat():
     """
@@ -236,6 +260,7 @@ async def broadcast_heartbeat():
 ## Human-in-the-Loop Integration
 
 ### Confidence-Based Routing
+
 ```python
 def route_decision(confidence_score: float, content_type: str) -> str:
     """
@@ -250,6 +275,7 @@ def route_decision(confidence_score: float, content_type: str) -> str:
 ```
 
 ### Economic Transaction Oversight
+
 ```python
 async def validate_economic_transaction(tx: EconomicTransaction) -> bool:
     """
@@ -261,6 +287,7 @@ async def validate_economic_transaction(tx: EconomicTransaction) -> bool:
 ## VS Code Development Workflow
 
 ### 1. Using `uv` with VS Code
+
 ```bash
 # Setup development environment
 uv sync --dev
@@ -276,6 +303,7 @@ uv run python -m chimera.api.server --reload
 ```
 
 ### 2. VS Code Extensions Recommended
+
 - **Python Extension Pack**: Enhanced Python development
 - **Pylance**: Advanced type checking and IntelliSense
 - **Docker**: Container management and deployment  
@@ -284,6 +312,7 @@ uv run python -m chimera.api.server --reload
 - **Jupyter**: Notebook support for data analysis
 
 ### 3. Launch Configurations (.vscode/launch.json)
+
 ```json
 {
     "version": "0.2.0",
@@ -321,12 +350,15 @@ uv run python -m chimera.api.server --reload
 ## Debugging & Troubleshooting
 
 ### 1. Specification Alignment Checking
+
 When debugging, always verify:
+
 - Does the code match the JSON schema from [specs/technical.md](specs/technical.md)?
 - Are user stories from [specs/functional.md](specs/functional.md) being fulfilled?
 - Does the implementation align with constraints in [specs/_meta.md](specs/_meta.md)?
 
 ### 2. Performance Monitoring  
+
 ```python
 # Always include performance tracking
 import time
@@ -344,6 +376,7 @@ async def generate_content(brief: str) -> GeneratedContent:
 ```
 
 ### 3. VS Code Debugging Tips
+
 - **Breakpoints**: Set breakpoints in complex algorithms for step-through debugging
 - **Debug Console**: Use for live variable inspection and code execution
 - **Terminal Integration**: Use `uv run` commands directly in VS Code terminal
@@ -351,6 +384,7 @@ async def generate_content(brief: str) -> GeneratedContent:
 - **Problems Panel**: Monitor linting issues and type errors in real-time
 
 ### 4. Common Issues & Solutions
+
 - **Schema Validation Errors**: Check specs/technical.md for exact field requirements
 - **MCP Connection Failures**: Verify MCP server configuration in research/tooling_strategy.md
 - **Performance Bottlenecks**: Profile against requirements in specs/_meta.md
@@ -359,6 +393,7 @@ async def generate_content(brief: str) -> GeneratedContent:
 ## Documentation Standards
 
 ### 1. Code Comments
+
 ```python
 def complex_algorithm():
     """
@@ -375,7 +410,9 @@ def complex_algorithm():
 ```
 
 ### 2. API Documentation
+
 Always include specification traceability:
+
 ```python
 @app.post("/api/v1/content")
 async def create_content():
@@ -404,6 +441,7 @@ Before considering any implementation complete, verify:
 ## Emergency Protocols
 
 If you encounter ambiguity or conflicts:
+
 1. **Check specs/ directory first** - never guess implementation details
 2. **Ask clarifying questions** - better to clarify than implement incorrectly  
 3. **Reference user stories** - understand the business intent behind technical requirements

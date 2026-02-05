@@ -10,6 +10,7 @@
 This document defines the Model Context Protocol (MCP) server strategy for Project Chimera development and runtime operations. MCP servers act as standardized bridges between our agents and external systems, following the principle that "MCP is the USB-C for AI applications."
 
 **Two Categories of MCP Servers**:
+
 1. **Development MCP Servers**: Tools that help developers build and maintain the system
 2. **Runtime MCP Servers**: Production integrations that agents use during autonomous operations
 
@@ -18,13 +19,16 @@ This document defines the Model Context Protocol (MCP) server strategy for Proje
 ### Primary Development MCPs
 
 #### 1. git-mcp (Version Control Operations)
+
 **Purpose**: Enable AI assistants to perform Git operations during development
-**Installation**: 
+**Installation**:
+
 ```bash
 uv add mcp-server-git
 ```
 
 **Configuration**: `.vscode/settings.json`
+
 ```json
 {
   "mcp.servers": {
@@ -40,7 +44,8 @@ uv add mcp-server-git
 ```
 
 **Capabilities**:
-- **Resources**: 
+
+- **Resources**:
   - `git://status` - Current repository status
   - `git://log/{branch}` - Commit history
   - `git://diff` - Working directory changes
@@ -53,19 +58,23 @@ uv add mcp-server-git
   - `git_pull` - Pull latest changes from remote
 
 **Use Cases**:
+
 - Automated commit message generation based on code changes
 - Branch management for feature development
 - Code review and diff analysis
 - Repository health monitoring
 
 #### 2. filesystem-mcp (File System Operations)
+
 **Purpose**: Safe file system operations with sandboxing for AI agents
 **Installation**:
+
 ```bash
 uv add mcp-server-filesystem
 ```
 
 **Configuration**:
+
 ```json
 {
   "mcp.servers": {
@@ -83,6 +92,7 @@ uv add mcp-server-filesystem
 ```
 
 **Capabilities**:
+
 - **Resources**:
   - `file://{path}` - Read file contents
   - `directory://{path}` - List directory contents
@@ -96,19 +106,23 @@ uv add mcp-server-filesystem
   - `search_files` - Content search across file system
 
 **Security Features**:
+
 - Sandboxed to project directories only
 - Read-only access to specs/ directory (source of truth)
 - File extension blacklisting for sensitive files
 - Automatic backup of modified files
 
 #### 3. postgres-mcp (Database Development)  
+
 **Purpose**: Database schema management, migrations, and development queries
 **Installation**:
+
 ```bash
 uv add mcp-server-postgres
 ```
 
 **Configuration**:
+
 ```json
 {
   "mcp.servers": {
@@ -126,6 +140,7 @@ uv add mcp-server-postgres
 ```
 
 **Capabilities**:
+
 - **Resources**:
   - `db://schema/{table}` - Table structure and constraints
   - `db://data/{table}` - Sample data for testing
@@ -138,6 +153,7 @@ uv add mcp-server-postgres
   - `backup_data` - Create development data backups
 
 **Safety Features**:
+
 - Read-only mode for production databases
 - Query complexity limits (joins, subqueries)
 - Row count limits for SELECT operations
@@ -146,8 +162,10 @@ uv add mcp-server-postgres
 ### Secondary Development MCPs
 
 #### 4. python-mcp (Code Analysis & Testing)
+
 **Purpose**: Python code analysis, linting, and test execution
 **Capabilities**:
+
 - **Tools**:
   - `run_tests` - Execute pytest with coverage reporting
   - `lint_code` - Run flake8, black, isort on codebase
@@ -155,8 +173,10 @@ uv add mcp-server-postgres
   - `generate_docs` - Auto-generate API documentation
 
 #### 5. docker-mcp (Container Management)
+
 **Purpose**: Docker container and image management for development
 **Capabilities**:
+
 - **Tools**:
   - `build_image` - Build Docker images with caching
   - `run_container` - Start containers with port mapping
@@ -168,8 +188,10 @@ uv add mcp-server-postgres
 ### Social Media Integration MCPs
 
 #### 1. twitter-mcp (Twitter/X API Integration)
+
 **Purpose**: Social media posting, mentions monitoring, engagement tracking
 **Configuration**:
+
 ```json
 {
   "mcp.servers": {
@@ -187,6 +209,7 @@ uv add mcp-server-postgres
 ```
 
 **Capabilities**:
+
 - **Resources**:
   - `twitter://mentions/{handle}/recent` - Recent mentions and replies
   - `twitter://trends/global` - Trending topics worldwide
@@ -199,8 +222,10 @@ uv add mcp-server-postgres
   - `analyze_engagement` - Track likes, retweets, replies
 
 #### 2. instagram-mcp (Instagram API Integration)  
+
 **Purpose**: Visual content publishing, story management, engagement tracking
 **Capabilities**:
+
 - **Resources**:
   - `instagram://feed/{handle}` - Recent posts and performance
   - `instagram://stories/{handle}` - Active stories metrics
@@ -211,8 +236,10 @@ uv add mcp-server-postgres
   - `create_story` - Temporary story content publishing
 
 #### 3. tiktok-mcp (TikTok API Integration)
+
 **Purpose**: Short-form video content publishing and trend analysis
 **Capabilities**:
+
 - **Resources**:
   - `tiktok://trends/hashtags` - Trending hashtags and challenges
   - `tiktok://analytics/{video_id}` - Video performance metrics
@@ -224,13 +251,16 @@ uv add mcp-server-postgres
 ### Economic Integration MCPs
 
 #### 4. coinbase-mcp (Blockchain Transactions)
+
 **Purpose**: Crypto wallet management, transactions, DeFi interactions
 **Installation**:
+
 ```bash
 uv add coinbase-agentkit-mcp
 ```
 
 **Configuration**:
+
 ```json
 {
   "mcp.servers": {
@@ -249,6 +279,7 @@ uv add coinbase-agentkit-mcp
 ```
 
 **Capabilities**:
+
 - **Resources**:
   - `wallet://balance/{address}` - Current wallet balances
   - `blockchain://transactions/{address}` - Transaction history
@@ -261,6 +292,7 @@ uv add coinbase-agentkit-mcp
   - `swap_tokens` - Exchange tokens via DEX protocols
 
 **Security Controls**:
+
 - Daily spending limits per persona ($50 USD)
 - Single transaction limits ($20 USD)
 - Multi-signature requirement for large transactions
@@ -269,8 +301,10 @@ uv add coinbase-agentkit-mcp
 ### Data & Intelligence MCPs
 
 #### 5. weaviate-mcp (Vector Database)  
+
 **Purpose**: Semantic memory storage, RAG operations, persona memory management
 **Configuration**:
+
 ```json
 {
   "mcp.servers": {
@@ -288,6 +322,7 @@ uv add coinbase-agentkit-mcp
 ```
 
 **Capabilities**:
+
 - **Resources**:
   - `memory://persona/{persona_id}` - Agent memory and context
   - `knowledge://trends/recent` - Recent trend analysis data  
@@ -300,8 +335,10 @@ uv add coinbase-agentkit-mcp
   - `analyze_patterns` - Identify behavioral patterns
 
 #### 6. news-mcp (News & Information)
+
 **Purpose**: Real-time news aggregation, sentiment analysis, trend detection
 **Capabilities**:
+
 - **Resources**:
   - `news://technology/latest` - Latest tech news articles
   - `news://trending/topics` - Trending news topics globally
@@ -315,12 +352,14 @@ uv add coinbase-agentkit-mcp
 ## MCP Server Management
 
 ### Development Workflow
+
 1. **Local Development**: Use development MCPs (git, filesystem, postgres)
 2. **Testing**: Validate MCP integrations with mock data
 3. **Staging**: Deploy runtime MCPs in isolated test environment  
 4. **Production**: Full MCP server suite with monitoring and failover
 
 ### Security & Compliance
+
 ```python
 # MCP Security Configuration
 MCP_SECURITY_CONFIG = {
@@ -343,12 +382,14 @@ MCP_SECURITY_CONFIG = {
 ```
 
 ### Monitoring & Observability  
+
 - **Metrics Collection**: Response times, error rates, usage patterns
 - **Health Checks**: Automated MCP server availability monitoring
 - **Alerting**: Slack/email notifications for MCP server failures
 - **Logging**: Structured logs for debugging and compliance
 
 ### Disaster Recovery
+
 - **Failover**: Backup MCP servers for critical integrations
 - **Circuit Breakers**: Automatic fallback when MCP servers are unavailable  
 - **Data Backup**: Regular backups of MCP server configurations
@@ -357,24 +398,28 @@ MCP_SECURITY_CONFIG = {
 ## Implementation Roadmap
 
 ### Phase 1: Development MCPs (Week 1)
+
 - [ ] Deploy git-mcp for version control automation
 - [ ] Configure filesystem-mcp with proper sandboxing
 - [ ] Set up postgres-mcp for database development
 - [ ] Test integration with VS Code and Claude
 
 ### Phase 2: Core Runtime MCPs (Week 2)
+
 - [ ] Deploy twitter-mcp for social media automation
 - [ ] Configure coinbase-mcp for economic transactions
 - [ ] Set up weaviate-mcp for semantic memory
 - [ ] Implement security controls and rate limiting
 
 ### Phase 3: Extended Runtime MCPs (Week 3)
-- [ ] Deploy instagram-mcp and tiktok-mcp 
+
+- [ ] Deploy instagram-mcp and tiktok-mcp
 - [ ] Configure news-mcp for market intelligence
 - [ ] Set up monitoring and alerting systems
 - [ ] Conduct end-to-end integration testing
 
 ### Phase 4: Production Optimization (Week 4)
+
 - [ ] Performance tuning and optimization
 - [ ] Security audit and penetration testing
 - [ ] Disaster recovery implementation
@@ -383,6 +428,7 @@ MCP_SECURITY_CONFIG = {
 ---
 
 **Integration Notes**:
+
 - All MCP servers must follow the Model Context Protocol specification
 - Resource URIs use standardized naming conventions (`protocol://path/resource`)
 - Tool interfaces include input validation and error handling

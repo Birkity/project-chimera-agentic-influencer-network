@@ -1016,6 +1016,7 @@ SCALING_CONFIG = {
 ---
 
 **Implementation Notes**:
+
 1. All schemas must be validated at runtime using Pydantic models
 2. Database migrations managed through Alembic for schema evolution
 3. MCP integrations use async/await for non-blocking operations  

@@ -15,12 +15,14 @@ Project Chimera is an advanced autonomous AI system designed to create, manage, 
 ## 🏗️ Architecture
 
 ### FastRender Swarm Pattern
+
 - **Planner Agent**: Strategic task decomposition and goal planning
 - **Worker Pool**: Parallel execution of atomic tasks with stateless agents  
 - **Judge Agent**: Quality assurance with confidence-based HITL routing
 - **Orchestrator**: Central control plane for fleet management
 
 ### Confidence-Based Human-in-the-Loop
+
 - **High Confidence (>90%)**: Autonomous execution
 - **Medium Confidence (70-90%)**: Human review required
 - **Low Confidence (<70%)**: Automatic rejection with escalation
@@ -28,7 +30,8 @@ Project Chimera is an advanced autonomous AI system designed to create, manage, 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.11+ 
+
+- Python 3.11+
 - [uv](https://docs.astral.sh/uv/) for dependency management
 - Docker for containerized development
 - Redis for task queuing
@@ -107,16 +110,19 @@ project-chimera/
 ## 🎨 Skills Architecture
 
 ### Content Creation Pipeline
+
 - `skill_download_video`: Video acquisition and processing
 - `skill_transcribe_audio`: Speech-to-text conversion
 - `skill_generate_caption`: Social media content creation
 
 ### Market Intelligence
+
 - `skill_analyze_trends`: Pattern recognition in social data
 - `skill_fetch_news`: Real-time news and information gathering  
 - `skill_sentiment_analysis`: Emotion and opinion analysis
 
 ### Social Engagement
+
 - `skill_reply_comments`: Automated comment responses
 - `skill_schedule_posts`: Content timing optimization
 - `skill_analyze_metrics`: Performance measurement and insights
@@ -126,11 +132,13 @@ project-chimera/
 Project Chimera uses Model Context Protocol (MCP) for all external integrations:
 
 ### Development MCP Servers
+
 - `git-mcp`: Version control operations
 - `filesystem-mcp`: File system management
 - `postgres-mcp`: Database operations
 
 ### Production MCP Servers  
+
 - `twitter-mcp`: Social media API integration
 - `coinbase-mcp`: Blockchain transaction management
 - `weaviate-mcp`: Vector database operations
@@ -138,6 +146,7 @@ Project Chimera uses Model Context Protocol (MCP) for all external integrations:
 ## 🌐 OpenClaw Network Integration
 
 Chimera agents participate in the OpenClaw social network through:
+
 - **SOUL.md Persona Definition**: Agent personality and capability publishing
 - **Heartbeat Protocol**: Availability and status broadcasting
 - **Task Assignment Network**: Cross-agent collaboration
@@ -146,12 +155,14 @@ Chimera agents participate in the OpenClaw social network through:
 ## 💰 Economic Agency (Bounded Risk)
 
 ### Autonomy Principles
+
 - **Predefined Spending Envelopes**: Strict daily/weekly limits per agent
 - **Automatic Escalation**: Transactions outside bounds require human approval
 - **Multi-signature Security**: Enterprise-grade key management
 - **Audit Trail**: Complete transaction history and compliance
 
 ### Transaction Types
+
 - Content creation costs (AI model usage, media licensing)
 - Social media promotion and advertising
 - Cross-platform engagement incentives
@@ -160,6 +171,7 @@ Chimera agents participate in the OpenClaw social network through:
 ## 🧪 Test-Driven Development
 
 This repository follows TDD principles:
+
 - **Specification-First**: All code must align with `specs/` directory
 - **Failing Tests Define Success**: Tests fail until correct implementation
 - **Contract Validation**: JSON schemas enforce API compliance
@@ -168,11 +180,13 @@ This repository follows TDD principles:
 ## 🔒 Security & Governance
 
 ### AI Code Review
+
 - **CodeRabbit Integration**: Automated specification alignment checking
 - **Security Scanning**: Vulnerability detection in dependencies
 - **Performance Monitoring**: Latency and throughput optimization
 
 ### Human Oversight
+
 - **Confidence-based routing**: AI uncertainty triggers human review
 - **Sensitive topic flags**: Politics, health, finance require approval
 - **Economic transaction limits**: Spending caps with escalation protocols
@@ -193,6 +207,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## 🎖️ Challenge Context
 
 This repository was developed as part of the **10 Academy AI Engineering Challenge**. It demonstrates:
+
 - Industry-standard repository structure and tooling
 - Specification-driven development methodology
 - Modern AI development practices with MCP integration
