@@ -4,10 +4,11 @@
 			"url": "https://mcppulse.10academy.org/proxy",
 			"type": "http",
 			"headers": {
-				"X-Device": "windows",
-				"X-Coding-Tool": "vscode",
-			},
-			
+                 "X-Device": "windows",
+                 "X-Coding-Tool": "vscode"
+               }
+
+
 		}
 	},
 	"inputs": []
