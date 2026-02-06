@@ -10,6 +10,7 @@
 This specification defines comprehensive error handling, resilience patterns, and recovery mechanisms for Project Chimera's autonomous agent fleet. The system must maintain **99.9% uptime** while safely handling failures across economic transactions, content generation, external API integrations, and inter-agent communication.
 
 **Core Principle**: **"Fail Safe, Fail Visible, Fail Forward"**
+
 - **Fail Safe**: Errors never compromise security or economic constraints
 - **Fail Visible**: All failures logged and observable in real-time
 - **Fail Forward**: Automatic recovery where possible, graceful degradation otherwise
@@ -23,6 +24,7 @@ This specification defines comprehensive error handling, resilience patterns, an
 **Definition**: Temporary failures that may succeed on retry without changes to request parameters.
 
 #### 1.1 Network & Communication Errors
+
 ```python
 class TransientNetworkError(BaseException):
     """Network-level failures that are inherently temporary"""
@@ -33,18 +35,21 @@ class TransientNetworkError(BaseException):
 ```
 
 **Examples**:
+
 - `ConnectionTimeout`: Socket connection timeout (default 30s)
 - `ReadTimeout`: Response read timeout (default 60s)
 - `TemporaryDNSFailure`: DNS resolution temporarily unavailable
 - `NetworkUnreachable`: Route to host temporarily down
 
 **Retry Strategy**:
+
 ```python
 # Exponential backoff with jitter
 delays = [100ms, 200ms, 400ms] + random_jitter(0-50ms)
 ```
 
 #### 1.2 Rate Limiting & Throttling
+
 ```python
 class RateLimitError(BaseException):
     """External API rate limit exceeded"""
@@ -54,11 +59,13 @@ class RateLimitError(BaseException):
 ```
 
 **Examples**:
+
 - `TwitterAPIRateLimit`: 429 response with `x-rate-limit-reset` header
 - `OpenAIRateLimit`: 429 with `retry-after` header
 - `CoinbaseRateLimit`: 429 with exponential backoff recommendation
 
 **Retry Strategy**:
+
 ```python
 # Wait for rate limit reset + small buffer
 if "retry-after" in response.headers:
@@ -71,6 +78,7 @@ else:
 ```
 
 #### 1.3 Temporary Service Unavailability
+
 ```python
 class ServiceUnavailableError(BaseException):
     """Upstream service temporarily down (503, 504)"""
@@ -81,12 +89,14 @@ class ServiceUnavailableError(BaseException):
 ```
 
 **Examples**:
+
 - `503 Service Unavailable`: Upstream service overloaded
 - `504 Gateway Timeout`: Upstream service not responding
 - `RedisConnectionError`: Redis temporarily unavailable
 - `WeaviateHealthCheckFailed`: Vector DB in maintenance mode
 
 **Retry Strategy**:
+
 ```python
 # Exponential backoff with circuit breaker integration
 delays = [1s, 2s, 4s]
@@ -101,6 +111,7 @@ if circuit_breaker.failure_count > threshold:
 **Definition**: Errors caused by invalid input, authorization failures, or policy violations that will not succeed on retry without correcting the request.
 
 #### 2.1 Authentication & Authorization Failures
+
 ```python
 class AuthenticationError(BaseException):
     """Invalid or expired credentials"""
@@ -111,12 +122,14 @@ class AuthenticationError(BaseException):
 ```
 
 **Examples**:
+
 - `InvalidAPIKey`: API key not recognized or expired
 - `ExpiredToken`: JWT or OAuth token expired (requires refresh)
 - `InsufficientPermissions`: Valid credentials but missing required scope
 - `WalletKeyInvalid`: Cryptographic wallet private key malformed
 
 **Handling Strategy**:
+
 ```python
 # No retries - log, alert, escalate to HITL
 async def handle_auth_error(error: AuthenticationError):
@@ -132,6 +145,7 @@ async def handle_auth_error(error: AuthenticationError):
 ```
 
 #### 2.2 Budget & Economic Policy Violations
+
 ```python
 class BudgetExceededError(BaseException):
     """Transaction would violate economic security constraints"""
@@ -142,12 +156,14 @@ class BudgetExceededError(BaseException):
 ```
 
 **Examples**:
+
 - `DailyLimitExceeded`: Would exceed $50/day limit (see [security.md](specs/security.md#L33))
 - `TransactionLimitExceeded`: Single transaction >$20 (see [security.md](specs/security.md#L47))
 - `InsufficientBalance`: Wallet balance insufficient for requested transaction
 - `UnauthorizedRecipient`: Transaction recipient not on allowlist
 
 **Handling Strategy**:
+
 ```python
 # CFO Judge Agent reviews for potential exception
 async def handle_budget_error(error: BudgetExceededError):
@@ -172,6 +188,7 @@ async def handle_budget_error(error: BudgetExceededError):
 ```
 
 #### 2.3 Content Policy Violations
+
 ```python
 class ContentPolicyViolationError(BaseException):
     """Generated content violates platform or internal policies"""
@@ -182,12 +199,14 @@ class ContentPolicyViolationError(BaseException):
 ```
 
 **Examples**:
+
 - `PlatformContentBanned`: Content violates Twitter/TikTok community guidelines
 - `InternalSafetyFilter`: Content fails internal toxicity checks
 - `CopyrightRisk`: Content similarity to copyrighted material too high
 - `BrandSafetyViolation`: Content misaligned with brand values
 
 **Handling Strategy**:
+
 ```python
 # Judge Agent reviews and decides regeneration vs escalation
 async def handle_content_violation(error: ContentPolicyViolationError):
@@ -213,6 +232,7 @@ async def handle_content_violation(error: ContentPolicyViolationError):
 ```
 
 #### 2.4 Invalid Input & Validation Errors
+
 ```python
 class ValidationError(BaseException):
     """Request payload fails schema validation"""
@@ -223,12 +243,14 @@ class ValidationError(BaseException):
 ```
 
 **Examples**:
+
 - `InvalidTaskSchema`: Task payload doesn't match ChimeraTask schema
 - `MissingRequiredField`: Required field (e.g., `persona_id`) not provided
 - `InvalidEnumValue`: Field contains value not in allowed enum
 - `TypeMismatch`: Field type doesn't match schema (e.g., string instead of UUID)
 
 **Handling Strategy**:
+
 ```python
 # Log validation errors for debugging, reject request immediately
 async def handle_validation_error(error: ValidationError):
@@ -255,6 +277,7 @@ async def handle_validation_error(error: ValidationError):
 **Definition**: Errors indicating potential security breaches, data corruption, or systemic failures requiring immediate human intervention.
 
 #### 3.1 Security & Integrity Violations
+
 ```python
 class SecurityViolationError(BaseException):
     """Security boundary breach detected"""
@@ -266,12 +289,14 @@ class SecurityViolationError(BaseException):
 ```
 
 **Examples**:
+
 - `UnauthorizedCredentialAccess`: Attempt to access credentials outside authorized scope
 - `EncryptionFailure`: Failure to encrypt sensitive data before storage
 - `AuditLogTampering`: Modification detected in immutable audit logs
 - `SuspiciousTransactionPattern`: Transaction pattern indicates potential compromise
 
 **Handling Strategy**:
+
 ```python
 # Immediate containment and human escalation
 async def handle_security_violation(error: SecurityViolationError):
@@ -306,6 +331,7 @@ async def handle_security_violation(error: SecurityViolationError):
 ```
 
 #### 3.2 Data Corruption & Consistency Errors
+
 ```python
 class DataCorruptionError(BaseException):
     """Data integrity violation detected"""
@@ -316,12 +342,14 @@ class DataCorruptionError(BaseException):
 ```
 
 **Examples**:
+
 - `MemoryInconsistency`: Redis and Weaviate memory state diverged
 - `ChecksumMismatch`: Stored content checksum doesn't match expected value
 - `ForeignKeyViolation`: PostgreSQL referential integrity constraint violated
 - `DuplicatePrimaryKey`: Attempt to insert duplicate UUID (indicates system clock issues or logic bug)
 
 **Handling Strategy**:
+
 ```python
 # Rollback transaction, preserve state, escalate for investigation
 async def handle_data_corruption(error: DataCorruptionError):
@@ -352,6 +380,7 @@ async def handle_data_corruption(error: DataCorruptionError):
 ```
 
 #### 3.3 Economic Anomalies
+
 ```python
 class EconomicAnomalyError(BaseException):
     """Unusual spending pattern indicating potential issue"""
@@ -362,12 +391,14 @@ class EconomicAnomalyError(BaseException):
 ```
 
 **Examples**:
+
 - `RapidSpendingSpike`: 5x increase in spending rate within 10 minutes
 - `UnexpectedRecipient`: Transaction to wallet address never used before
 - `OffHoursActivity`: Economic activity during configured inactive hours
 - `RepeatedFailedTransactions`: 10+ failed transaction attempts in short window
 
 **Handling Strategy**:
+
 ```python
 # Freeze economic activity, escalate for human review
 async def handle_economic_anomaly(error: EconomicAnomalyError):
@@ -402,6 +433,7 @@ async def handle_economic_anomaly(error: EconomicAnomalyError):
 ### Exponential Backoff with Jitter
 
 **Implementation**:
+
 ```python
 import random
 from typing import Callable, TypeVar, Optional
@@ -484,6 +516,7 @@ async def retry_with_exponential_backoff(
 ### Rate Limit Aware Retry
 
 **Implementation**:
+
 ```python
 async def retry_with_rate_limit_handling(
     func: Callable[..., T],
@@ -547,6 +580,7 @@ async def retry_with_rate_limit_handling(
 ### Implementation
 
 **Redis-Based Circuit Breaker**:
+
 ```python
 from enum import Enum
 from datetime import datetime, timedelta
@@ -735,6 +769,7 @@ CIRCUIT_BREAKER_CONFIG = {
 ### HITL Queue Implementation
 
 **Redis Queue Schema**:
+
 ```python
 # HITL escalation queue
 # Key: chimera:hitl:queue:{priority}
@@ -763,6 +798,7 @@ await redis.zadd(
 ```
 
 **HITL Dashboard API**:
+
 ```python
 @router.get("/api/v1/hitl/queue")
 async def get_hitl_queue(
@@ -977,6 +1013,7 @@ class AdaptiveHeartbeatController:
 ### Structured Error Logging
 
 **Log Format** (JSON):
+
 ```json
 {
   "timestamp": "2026-02-06T10:30:45.123Z",
@@ -1003,6 +1040,7 @@ class AdaptiveHeartbeatController:
 ### Grafana Dashboard Metrics
 
 **Error Rate Metrics** (Prometheus + Grafana):
+
 ```python
 # Prometheus metrics for error tracking
 chimera_errors_total = Counter(
@@ -1038,6 +1076,7 @@ chimera_hitl_resolution_time_seconds = Histogram(
 ```
 
 **Grafana Alert Rules**:
+
 ```yaml
 groups:
   - name: chimera_error_alerts
@@ -1202,6 +1241,7 @@ async def test_security_violation_escalation_flow():
 ## Implementation Checklist
 
 ### Phase 1: Core Error Handling (Week 1)
+
 - [ ] Implement base exception classes for all error categories
 - [ ] Create retry_with_exponential_backoff utility function
 - [ ] Implement rate limit aware retry logic
@@ -1209,12 +1249,14 @@ async def test_security_violation_escalation_flow():
 - [ ] Create Prometheus metrics for error tracking
 
 ### Phase 2: Circuit Breakers (Week 2)
+
 - [ ] Implement Redis-based CircuitBreaker class
 - [ ] Configure circuit breakers for all external services (Twitter, OpenAI, Coinbase, Weaviate, OpenClaw)
 - [ ] Add circuit breaker state monitoring to Grafana
 - [ ] Create circuit breaker override API for manual control
 
 ### Phase 3: HITL Escalation (Week 2)
+
 - [ ] Implement HITL escalation queue in Redis
 - [ ] Create HITL dashboard API endpoints
 - [ ] Build HITL web UI for human operators
@@ -1222,18 +1264,21 @@ async def test_security_violation_escalation_flow():
 - [ ] Add HITL resolution workflow
 
 ### Phase 4: Graceful Degradation (Week 3)
+
 - [ ] Implement content generation fallback tiers
 - [ ] Add memory system degradation (Weaviate → Redis only)
 - [ ] Create adaptive heartbeat controller
 - [ ] Test all degradation scenarios under load
 
 ### Phase 5: Testing & Validation (Week 3)
+
 - [ ] Write unit tests for all error handlers (80% coverage)
 - [ ] Create integration tests for fallback flows
 - [ ] Load test circuit breakers under simulated failures
 - [ ] Chaos engineering: Inject failures and validate recovery
 
 ### Phase 6: Observability & Monitoring (Week 4)
+
 - [ ] Deploy Grafana dashboards for error metrics
 - [ ] Configure alerting rules for critical errors
 - [ ] Create runbooks for common error scenarios
@@ -1244,20 +1289,24 @@ async def test_security_violation_escalation_flow():
 ## Integration with Existing Specifications
 
 ### Security.md Integration
+
 - **Budget enforcement**: All `BudgetExceededError` handling aligns with [security.md](specs/security.md#L33) CFO Judge Agent requirements
 - **Credential failures**: `AuthenticationError` handling follows [security.md](specs/security.md#L77) credential rotation protocols
 - **Economic anomalies**: Anomaly detection triggers match [security.md](specs/security.md#L62) audit trail requirements
 
 ### Heartbeat.md Integration
+
 - **Health status reporting**: Errors update agent health status in [heartbeat.md](specs/heartbeat.md#L84) `status` field
 - **Degradation signals**: Circuit breaker states reflected in heartbeat `health_metrics`
 - **Availability impact**: Open circuits set `skill_availability` to unavailable in [heartbeat.md](specs/heartbeat.md#L150)
 
 ### Memory.md Integration
+
 - **Weaviate fallback**: Memory degradation strategy aligns with [memory.md](specs/memory.md) Redis/Weaviate hierarchy
 - **Delayed ingestion**: Queued memories processed during recovery match [memory.md](specs/memory.md#L627) archival patterns
 
 ### Technical.md Integration
+
 - **JSON schemas**: Error response schemas extend [technical.md](specs/technical.md#L60) ChimeraTask validation patterns
 - **Database constraints**: Foreign key violation handling respects [technical.md](specs/technical.md#L535) referential integrity
 

@@ -61,6 +61,7 @@ Project Chimera implements a **hierarchical memory architecture** combining shor
 ### Redis Schema Design
 
 #### Conversation History
+
 ```redis
 # Key pattern: chimera:agent:{agent_id}:conversation:{session_id}
 # Data structure: List (FIFO with TTL)
@@ -87,6 +88,7 @@ EXPIRE chimera:agent:001:conversation:session-abc 3600
 ```
 
 #### Active Task State
+
 ```redis
 # Key pattern: chimera:agent:{agent_id}:tasks:active
 # Data structure: Hash
@@ -103,6 +105,7 @@ HSET chimera:agent:001:tasks:active task-uuid-1 {
 ```
 
 #### Recent Emotional State
+
 ```redis
 # Key pattern: chimera:agent:{agent_id}:emotional_state
 # Data structure: JSON with TTL
@@ -122,6 +125,7 @@ EXPIRE chimera:agent:001:emotional_state 3600
 ```
 
 #### Daily Spend Tracker (Budget Monitoring)
+
 ```redis
 # Key pattern: chimera:agent:{agent_id}:budget:daily:{date}
 # Data structure: Hash
@@ -212,6 +216,7 @@ class ShortTermMemory:
 ### Weaviate Schema Design
 
 #### AgentMemory Collection
+
 ```python
 {
   "class": "AgentMemory",
@@ -293,6 +298,7 @@ class ShortTermMemory:
 #### Memory Type Categories
 
 **1. Interaction Memory**
+
 ```json
 {
   "memory_type": "interaction",
@@ -311,6 +317,7 @@ class ShortTermMemory:
 ```
 
 **2. Learning Memory**
+
 ```json
 {
   "memory_type": "learning",
@@ -328,6 +335,7 @@ class ShortTermMemory:
 ```
 
 **3. Achievement Memory**
+
 ```json
 {
   "memory_type": "achievement",
@@ -346,6 +354,7 @@ class ShortTermMemory:
 ```
 
 **4. Relationship Memory**
+
 ```json
 {
   "memory_type": "relationship",
@@ -735,11 +744,13 @@ async def memory_resource_recent(agent_id: str) -> Resource:
 ## Performance Optimization
 
 ### Caching Strategy
+
 - Redis short-term: <1ms retrieval
 - Weaviate semantic search: <100ms typical
 - Context assembly: <200ms total pipeline
 
 ### Scaling Considerations
+
 - Shard Weaviate by agent_id for >10K agents
 - Redis cluster mode for high-traffic scenarios
 - Memory compression for archival storage

@@ -12,18 +12,23 @@ Project Chimera implements **"Autonomy with Bounded Risk"** - enabling autonomou
 ## Core Security Principles
 
 ### 1. **Defense in Depth**
+
 Multiple layers of security controls with no single point of failure
 
-### 2. **Principle of Least Privilege** 
+### 2. **Principle of Least Privilege**
+
 Agents receive minimum necessary permissions for their designated roles
 
 ### 3. **Zero Trust Architecture**
+
 All interactions validated regardless of source or previous trust status
 
 ### 4. **Continuous Monitoring**
+
 Real-time security monitoring with automated threat response
 
 ### 5. **Human Oversight Integration**
+
 Mandatory escalation for high-risk operations via HITL framework
 
 ---
@@ -35,6 +40,7 @@ Mandatory escalation for high-risk operations via HITL framework
 **Purpose**: Prevent financial losses through automated transaction monitoring and limits
 
 #### Economic Transaction Limits
+
 ```json
 {
   "daily_spending_limits": {
@@ -51,6 +57,7 @@ Mandatory escalation for high-risk operations via HITL framework
 ```
 
 #### Security Controls
+
 - **Pre-Transaction Validation**: Balance checks required before any spend
 - **Anomaly Detection**: Pattern analysis for suspicious transaction requests
 - **Mandatory Escalation**: Transactions exceeding limits trigger human review
@@ -58,6 +65,7 @@ Mandatory escalation for high-risk operations via HITL framework
 - **Audit Trail**: All financial operations logged immutably on-chain
 
 #### Implementation Requirements
+
 ```python
 @budget_check(category="content_creation") 
 async def execute_payment(amount: float, recipient: str, purpose: str):
@@ -78,12 +86,14 @@ async def execute_payment(amount: float, recipient: str, purpose: str):
 ### Cryptographic Wallet Security
 
 #### Private Key Protection
+
 - **Storage**: Enterprise-grade encrypted secrets manager (AWS Secrets Manager, HashiCorpVault)
 - **Access**: Keys injected at runtime startup only, never logged or exposed
 - **Rotation**: Automatic key rotation every 90 days
 - **Monitoring**: Key access logging and anomaly detection
 
 #### Environment Security
+
 ```bash
 # Required Environment Variables (encrypted)
 CDP_API_KEY_NAME=encrypted_value
@@ -98,11 +108,13 @@ AUDIT_LOG_ENCRYPTION=enabled
 ### API Security Framework
 
 #### Authentication Requirements
+
 - **Service-to-Service**: mTLS certificates for inter-agent communication
 - **External APIs**: OAuth 2.0 with PKCE for social platform integrations
 - **MCP Servers**: API key rotation every 30 days with scope limiting
 
 #### Authorization Matrix
+
 ```yaml
 agent_permissions:
   planner_agent:
@@ -129,7 +141,9 @@ agent_permissions:
 ### Multi-Layered Content Validation
 
 #### Sensitive Topic Detection
+
 **Mandatory Human Review Categories**:
+
 - Political content and endorsements
 - Health and medical advice
 - Financial investment recommendations  
@@ -138,6 +152,7 @@ agent_permissions:
 - Violence or harm-related content
 
 #### Content Filter Pipeline
+
 ```python
 class ContentSecurityFilter:
     """
@@ -164,6 +179,7 @@ class ContentSecurityFilter:
 ```
 
 #### Platform-Specific Safety Rules
+
 - **Twitter/X**: Character limits, hashtag restrictions, mention etiquette
 - **Instagram**: Visual content guidelines, story safety measures
 - **TikTok**: Audio analysis, trend compliance validation
@@ -176,6 +192,7 @@ class ContentSecurityFilter:
 ### Confidence-Based Escalation Framework
 
 #### Risk Scoring Matrix
+
 ```json
 {
   "confidence_thresholds": {
@@ -193,12 +210,14 @@ class ContentSecurityFilter:
 ```
 
 #### Security Reviewer Requirements
+
 - **Authentication**: MFA required for all reviewers
 - **Authorization**: Role-based access (content reviewers vs. financial approvers)
 - **Audit Trail**: Every human decision logged with rationale
 - **Time Limits**: 2-hour SLA for critical security reviews
 
 #### Emergency Override Protocol
+
 - **Trigger Conditions**: Security incidents, regulatory requests, brand crises
 - **Authorization**: Requires two senior reviewers + system administrator
 - **Scope**: Can halt specific agents or entire swarm operations
@@ -211,6 +230,7 @@ class ContentSecurityFilter:
 ### Trust Framework Integration
 
 #### Agent Identity Verification
+
 ```json
 {
   "identity_attestation": {
@@ -229,12 +249,14 @@ class ContentSecurityFilter:
 ```
 
 #### Secure Communication Protocols
+
 - **Message Authentication**: All inter-agent messages signed with Ed25519
 - **Payload Encryption**: AES-256-GCM for sensitive data transmission
 - **Replay Protection**: Nonce-based message ordering with expiration
 - **Trust Verification**: Continuous validation of external agent credentials
 
 #### Risk Assessment for External Agents
+
 ```python
 class OpenClawTrustEvaluator:
     def evaluate_external_agent(self, agent_profile: dict) -> TrustDecision:
@@ -263,12 +285,14 @@ class OpenClawTrustEvaluator:
 ### Multi-Tenant Data Isolation
 
 #### Tenant Separation Requirements
+
 - **Database Isolation**: Separate schemas per tenant with encryption at rest
 - **Memory Isolation**: Agent instances cannot access other tenant data
 - **Network Isolation**: VPC separation for enterprise customers
 - **Backup Isolation**: Encrypted, tenant-specific backup strategies
 
 #### Personal Data Handling (GDPR/CCPA Compliance)
+
 ```python
 class PersonalDataManager:
     """
@@ -304,6 +328,7 @@ class PersonalDataManager:
 ### Container & Runtime Security
 
 #### Container Hardening
+
 - **Base Images**: Minimal Alpine Linux with security patches
 - **Non-Root Execution**: All containers run as non-privileged users
 - **Resource Limits**: CPU/memory constraints prevent resource exhaustion
@@ -311,6 +336,7 @@ class PersonalDataManager:
 - **Image Scanning**: Automated vulnerability scanning with Snyk/Trivy
 
 #### Runtime Protection
+
 ```yaml
 security_context:
   run_as_non_root: true
@@ -327,12 +353,14 @@ security_context:
 ### Database Security
 
 #### Access Controls
+
 - **Connection Encryption**: TLS 1.3 for all database connections
 - **Authentication**: Certificate-based authentication + passwords
 - **Parameterized Queries**: Mandatory prepared statements to prevent SQL injection
 - **Audit Logging**: All database operations logged for security analysis
 
 #### Backup Security
+
 - **Encryption**: AES-256 encryption for all backups
 - **Access Controls**: Role-based access to backup systems
 - **Immutable Storage**: Write-once-read-many backup retention
@@ -345,6 +373,7 @@ security_context:
 ### Security Monitoring Framework
 
 #### Real-Time Threat Detection
+
 ```python
 class SecurityMonitor:
     """
@@ -369,6 +398,7 @@ class SecurityMonitor:
 ```
 
 #### Security Incident Response Protocol
+
 1. **Detection**: Automated alerting for security threshold breaches
 2. **Containment**: Immediate agent isolation and privilege revocation
 3. **Investigation**: Forensic analysis with audit trail reconstruction
@@ -379,12 +409,14 @@ class SecurityMonitor:
 ### Compliance & Audit Requirements
 
 #### Regulatory Compliance Framework
+
 - **EU AI Act**: Transparency reporting and risk assessment documentation
 - **SOC 2**: Security control implementation and third-party validation
 - **PCI DSS**: Payment processing security standards (if applicable)
 - **GDPR/CCPA**: Privacy protection and data subject rights
 
 #### Audit Trail Requirements
+
 ```json
 {
   "audit_event": {
@@ -408,12 +440,14 @@ class SecurityMonitor:
 ## 🎯 Security Testing & Validation
 
 ### Penetration Testing Requirements
+
 - **Quarterly External Assessments**: Third-party security evaluations
 - **Agent Behavior Testing**: Red team exercises targeting agent manipulation
 - **Economic Attack Simulations**: Testing financial control bypasses
 - **Social Engineering Tests**: Testing human reviewer decision-making
 
 ### Security Metrics & KPIs
+
 ```yaml
 security_metrics:
   incident_metrics:
@@ -437,24 +471,28 @@ security_metrics:
 ## 🚀 Implementation Roadmap
 
 ### Phase 1: Core Security Infrastructure (Week 1-2)
+
 - [ ] Economic transaction limits and monitoring
 - [ ] Credential management with vault integration
 - [ ] Basic content filtering pipeline
 - [ ] HITL escalation framework
 
 ### Phase 2: Advanced Monitoring (Week 3-4)
+
 - [ ] Real-time security monitoring dashboards
 - [ ] Anomaly detection algorithms
 - [ ] Incident response automation
 - [ ] Compliance audit trail implementation
 
 ### Phase 3: External Integration Security (Week 5-6)
+
 - [ ] OpenClaw trust framework integration
 - [ ] MCP server security hardening
 - [ ] Third-party API security controls
 - [ ] Penetration testing and remediation
 
 ### Phase 4: Production Hardening (Week 7-8)
+
 - [ ] Container security implementation
 - [ ] Database encryption and access controls  
 - [ ] Backup security verification
@@ -465,6 +503,7 @@ security_metrics:
 ## 📚 Security Guidelines for Developers
 
 ### Secure Coding Practices
+
 1. **Input Validation**: All user inputs sanitized and validated
 2. **Output Encoding**: All outputs properly encoded for target context
 3. **Error Handling**: Generic error messages to prevent information leakage
@@ -472,6 +511,7 @@ security_metrics:
 5. **Testing**: Security unit tests for all critical functions
 
 ### Code Review Security Checklist
+
 - [ ] Sensitive data properly encrypted in transit and at rest
 - [ ] Authentication and authorization correctly implemented
 - [ ] Economic transaction limits properly enforced
@@ -482,6 +522,6 @@ security_metrics:
 
 ---
 
-**Security Contact**: security@chimera.ai  
+**Security Contact**: <security@chimera.ai>  
 **Emergency Response**: +1-800-CHIMERA-SEC  
 **Security Documentation Status**: APPROVED FOR IMPLEMENTATION
