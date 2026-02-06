@@ -498,13 +498,6 @@ These aren't exotic or futuristic choices. They're proven patterns applied to a 
 
 ---
 
-## Next Steps (Task 2)
-
-- Create the `specs/` directory with detailed specifications
-- Set up `.cursor/rules` to teach our AI assistant how to work in this codebase
-- Define the first three Skills with their input/output contracts
-- Document MCP servers we'll use for development
-
 ---
 
 *This report was prepared as part of Task 1 of the Project Chimera challenge. The Tenx MCP Sense server was connected throughout the research and writing process.*
